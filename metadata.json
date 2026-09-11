@@ -1,0 +1,6 @@
+{
+  "name": "Kéo Co Tri Thức",
+  "description": "Trò chơi đối kháng trả lời câu hỏi và kéo co 2 đội sôi động với 10 câu hỏi ngẫu nhiên và hiệu ứng kéo co chân thực.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
