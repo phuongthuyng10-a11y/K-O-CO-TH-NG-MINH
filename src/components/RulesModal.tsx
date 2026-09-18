@@ -37,18 +37,35 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
 
         {/* Rule Items */}
         <div className="mt-5 space-y-3 text-sm text-slate-700">
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-purple-50/90 border border-purple-200">
+            <Award className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+            <div>
+              <strong className="text-purple-950 font-bold block mb-0.5">
+                1. Chơi 2 Người Hoặc Chơi Với Máy (AI)
+              </strong>
+              <ul className="list-disc list-inside space-y-1 text-slate-600 text-xs mt-1">
+                <li>
+                  <span className="font-bold text-emerald-800">👥 Chơi 2 Người:</span> Hai bạn cùng ngồi một máy thi đấu đối kháng trực tiếp.
+                </li>
+                <li>
+                  <span className="font-bold text-purple-900">🤖 Chơi Với Máy:</span> Đấu trí với trí tuệ nhân tạo (AI Bot) với 3 cấp độ thông minh: <strong className="text-emerald-700">Dễ (50%)</strong>, <strong className="text-amber-700">Vừa (75%)</strong>, <strong className="text-rose-700">Khó (90%)</strong>.
+                </li>
+              </ul>
+            </div>
+          </div>
+
           <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50/80 border border-amber-200">
             <Flame className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div>
               <strong className="text-amber-950 font-bold block mb-0.5">
-                1. Hai Chế Độ Thi Đấu Linh Hoạt
+                2. Thời Gian 10 Giây &amp; Chuyển Lượt
               </strong>
               <ul className="list-disc list-inside space-y-1 text-slate-600 text-xs mt-1">
                 <li>
-                  <span className="font-bold text-amber-900">⚡ Chế độ Song Song (Mới):</span> Cả 2 đội cùng nhìn thấy câu hỏi và làm bài độc lập cùng lúc. Bất kỳ đội nào trả lời đúng là dây lập tức giật về phía đội đó ngay. Đua tốc độ cực kỳ kịch tính!
+                  <span className="font-bold text-amber-900">⏱️ Giới hạn 10 giây:</span> Mỗi lượt có đúng 10 giây để suy nghĩ và chọn câu trả lời.
                 </li>
                 <li>
-                  <span className="font-bold text-blue-900">🔄 Chế độ Luân Phiên:</span> Đội 1 trả lời xong đến lượt Đội 2, phù hợp cho lớp học hoặc thi đấu theo thứ tự.
+                  <span className="font-bold text-blue-900">🔄 Chuyển lượt khi không trả lời được:</span> Nếu hết 10 giây chưa chọn được đáp án (hoặc trả lời sai), quyền trả lời lập tức chuyển qua cho đối phương (10 giây) để cướp điểm kéo dây!
                 </li>
               </ul>
             </div>
@@ -58,9 +75,9 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
             <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
             <div>
               <strong className="text-emerald-950 font-bold block mb-0.5">
-                2. 10 Câu Hỏi Bất Kì &amp; Độc Lập Hoàn Toàn
+                3. 10 Câu Hỏi Bất Kì &amp; Độc Lập Hoàn Toàn
               </strong>
-              Mỗi đội nhận đúng 10 câu hỏi ngẫu nhiên từ ngân hàng 60+ câu hỏi đa dạng và 100% không trùng lặp giữa 2 đội.
+              Mỗi đội nhận đúng 10 câu hỏi ngẫu nhiên từ ngân hàng câu hỏi đa dạng và 100% không trùng lặp giữa 2 bên.
             </div>
           </div>
 
@@ -68,14 +85,14 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
             <ShieldAlert className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
             <div>
               <strong className="text-blue-950 font-bold block mb-0.5">
-                3. Quy Tắc Kéo Dây
+                4. Quy Tắc Kéo Dây
               </strong>
               <ul className="list-disc list-inside space-y-1 text-slate-600 text-xs mt-1">
                 <li>
                   Khi <span className="font-semibold text-emerald-700">Đội 1 trả lời đúng</span>: Dây kéo co lập tức di chuyển về phía sân Đội 1 (-1 bước).
                 </li>
                 <li>
-                  Khi <span className="font-semibold text-rose-700">Đội 2 trả lời đúng</span>: Dây kéo co lập tức di chuyển về phía sân Đội 2 (+1 bước).
+                  Khi <span className="font-semibold text-rose-700">Đội 2 / Máy trả lời đúng</span>: Dây kéo co lập tức di chuyển về phía sân Đội 2 (+1 bước).
                 </li>
                 <li>
                   Nếu trả lời sai: <span className="font-semibold text-slate-700">Dây kéo co vẫn đứng yên tại chỗ!</span>
@@ -84,13 +101,13 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-3 rounded-xl bg-purple-50/70 border border-purple-200">
-            <Award className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <Award className="w-5 h-5 text-slate-600 shrink-0 mt-0.5" />
             <div>
-              <strong className="text-purple-950 font-bold block mb-0.5">
-                4. Điều Kiện Thắng Cuộc
+              <strong className="text-slate-900 font-bold block mb-0.5">
+                5. Điều Kiện Thắng Cuộc
               </strong>
-              Sau 10 câu hỏi của cả hai đội, đội nào kéo được dây về phía sân của mình (hoặc có số câu đúng nhiều hơn nếu ở vạch giữa) sẽ giành chiến thắng chung cuộc!
+              Sau 10 câu hỏi của cả hai bên, bên nào kéo được dây về phía sân của mình (hoặc có số câu đúng nhiều hơn nếu ở vạch giữa) sẽ giành chiến thắng chung cuộc!
             </div>
           </div>
         </div>

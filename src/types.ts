@@ -24,6 +24,9 @@ export interface Team {
 
 export type GameMode = 'parallel' | 'alternating'; // 'parallel': cả 2 đội chơi song song cùng lúc | 'alternating': luân phiên từng câu
 
+export type OpponentType = 'pvp' | 'ai'; // 'pvp': Chơi 2 người | 'ai': Chơi với máy
+export type AiDifficulty = 'easy' | 'medium' | 'hard'; // Dễ (50%), Vừa (75%), Khó (90%)
+
 export type TurnMode = 'alternating' | 'independent'; // 'alternating': luân phiên từng câu | 'independent': mỗi đội chơi lần lượt cả 10 câu
 
 export type GameState = 'setup' | 'playing' | 'round_result' | 'finished';

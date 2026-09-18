@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { Trophy, Award, RotateCcw, Check, Sparkles } from 'lucide-react';
-import { Team } from '../types';
+import { Trophy, Award, RotateCcw, Check, Sparkles, Bot, Users } from 'lucide-react';
+import { Team, OpponentType } from '../types';
 import { soundFX } from '../utils/sound';
 
 interface VictoryModalProps {
@@ -9,6 +9,7 @@ interface VictoryModalProps {
   team2: Team;
   ropePosition: number;
   onRestart: () => void;
+  opponentType?: OpponentType;
 }
 
 export const VictoryModal: React.FC<VictoryModalProps> = ({
@@ -16,6 +17,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
   team2,
   ropePosition,
   onRestart,
+  opponentType = 'pvp',
 }) => {
   let winner: Team | null = null;
   let isDraw = false;
@@ -74,8 +76,18 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
 
         {/* Title & Winner Text */}
         <div className="mt-5">
-          <span className="text-xs font-black uppercase tracking-widest text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-            KẾT QUẢ CHUNG CUỘC
+          <span className="text-xs font-black uppercase tracking-widest text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 inline-flex items-center gap-1.5">
+            {opponentType === 'ai' ? (
+              <>
+                <Bot className="w-3.5 h-3.5 text-purple-600" />
+                <span>KẾT QUẢ ĐẤU VỚI MÁY (AI)</span>
+              </>
+            ) : (
+              <>
+                <Users className="w-3.5 h-3.5 text-blue-600" />
+                <span>KẾT QUẢ ĐẤU 2 NGƯỜI (PVP)</span>
+              </>
+            )}
           </span>
 
           {isDraw ? (
@@ -84,13 +96,23 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
             </h2>
           ) : (
             <h2 className="text-2xl sm:text-3xl font-black text-slate-800 mt-2">
-              🏆 {winner?.name} CHIẾN THẮNG!
+              {opponentType === 'ai' && winner?.id === 'team1'
+                ? '🎉 BẠN ĐÃ CHIẾN THẮNG MÁY TÍNH!'
+                : opponentType === 'ai' && winner?.id === 'team2'
+                ? '🤖 MÁY TÍNH ĐÃ CHIẾN THẮNG!'
+                : `🏆 ${winner?.name} CHIẾN THẮNG!`}
             </h2>
           )}
 
           <p className="text-sm text-slate-600 mt-1 max-w-xs mx-auto">
             {isDraw
-              ? 'Hai đội có cùng kết quả trả lời xuất sắc và dây kéo co giữ vị trí cân bằng!'
+              ? opponentType === 'ai'
+                ? 'Bạn và Máy tính bất phân thắng bại! Cả 2 bên đều kéo co xuất sắc.'
+                : 'Hai đội có cùng kết quả trả lời xuất sắc và dây kéo co giữ vị trí cân bằng!'
+              : opponentType === 'ai'
+              ? winner?.id === 'team1'
+                ? 'Xuất sắc! Trí tuệ của bạn đã đánh bại thuật toán AI của máy tính và kéo trọn dây về đích.'
+                : 'Máy tính với thuật toán thông minh đã vượt lên. Hãy rèn luyện và phục thù ngay!'
               : `Sau 10 câu hỏi cam go, dây kéo co đã nghiêng trọn vẹn về phần sân của ${winner?.name}!`}
           </p>
         </div>

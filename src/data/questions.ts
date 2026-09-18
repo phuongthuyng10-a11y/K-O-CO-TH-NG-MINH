@@ -687,9 +687,14 @@ export function randomizeQuestionOptions(q: Question): Question {
 /**
  * Lấy n câu hỏi bất kì và không trùng lặp từ ngân hàng câu hỏi
  */
-export function getRandomUniqueQuestions(count: number = 10, excludeIds: string[] = []): Question[] {
-  const available = QUESTION_BANK.filter((q) => !excludeIds.includes(q.id));
-  const pool = available.length >= count ? available : QUESTION_BANK;
+export function getRandomUniqueQuestions(
+  count: number = 10,
+  excludeIds: string[] = [],
+  customQuestions?: Question[]
+): Question[] {
+  const basePool = customQuestions && customQuestions.length > 0 ? customQuestions : QUESTION_BANK;
+  const available = basePool.filter((q) => !excludeIds.includes(q.id));
+  const pool = available.length >= count ? available : (basePool.length >= count ? basePool : QUESTION_BANK);
   const shuffled = shuffleArray(pool);
   const selected = shuffled.slice(0, count);
   return selected.map(randomizeQuestionOptions);
@@ -706,7 +711,20 @@ export function generateQuestionSetsForTeams(customQuestions?: Question[]): {
   team1Questions: Question[];
   team2Questions: Question[];
 } {
-  const pool = customQuestions && customQuestions.length >= 20 ? customQuestions : QUESTION_BANK;
+  let pool = customQuestions && customQuestions.length > 0 ? [...customQuestions] : [...QUESTION_BANK];
+
+  // Nếu số câu trong ngân hàng tùy chỉnh ít hơn 20, tự động bù thêm từ ngân hàng gốc để đảm bảo đủ 20 câu không trùng lặp
+  if (pool.length < 20) {
+    const existingIds = new Set(pool.map((q) => q.id));
+    for (const q of QUESTION_BANK) {
+      if (!existingIds.has(q.id)) {
+        pool.push(q);
+        existingIds.add(q.id);
+        if (pool.length >= 20) break;
+      }
+    }
+  }
+
   const shuffled = shuffleArray(pool);
 
   // 10 câu riêng biệt cho Đội 1

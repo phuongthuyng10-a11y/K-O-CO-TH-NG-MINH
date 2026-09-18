@@ -16,6 +16,7 @@ interface ParallelTeamCardProps {
   onNext: () => void;
   keyboardKeys: [string, string, string, string];
   teamSide: 'left' | 'right';
+  isBot?: boolean;
 }
 
 const ParallelTeamCard: React.FC<ParallelTeamCardProps> = ({
@@ -30,6 +31,7 @@ const ParallelTeamCard: React.FC<ParallelTeamCardProps> = ({
   onNext,
   keyboardKeys,
   teamSide,
+  isBot = false,
 }) => {
   const isTeam1 = teamSide === 'left';
   const optionLabels = ['A', 'B', 'C', 'D'];
@@ -60,11 +62,16 @@ const ParallelTeamCard: React.FC<ParallelTeamCardProps> = ({
               } animate-pulse`}
             />
             <h3
-              className={`text-base sm:text-lg font-black tracking-tight ${
+              className={`text-base sm:text-lg font-black tracking-tight flex items-center gap-1.5 ${
                 isTeam1 ? 'text-emerald-800' : 'text-rose-800'
               }`}
             >
-              {team.name}
+              <span>{team.name}</span>
+              {isBot && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-800 border border-purple-200">
+                  🤖 MÁY TÍNH
+                </span>
+              )}
             </h3>
           </div>
 
@@ -92,6 +99,18 @@ const ParallelTeamCard: React.FC<ParallelTeamCardProps> = ({
             </span>
           </div>
         </div>
+
+        {/* Bot Thinking Notification */}
+        {isBot && !isAnswered && !isFinished && (
+          <div className="my-2.5 p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 flex items-center gap-2.5 text-xs animate-pulse">
+            <span className="w-6 h-6 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
+              🤖
+            </span>
+            <span className="font-semibold text-purple-950">
+              Máy đang suy nghĩ và sắp chọn đáp án...
+            </span>
+          </div>
+        )}
 
         {/* Progress bar (10 segments) */}
         <div className="flex gap-1 my-3">
@@ -176,10 +195,10 @@ const ParallelTeamCard: React.FC<ParallelTeamCardProps> = ({
                   <motion.button
                     key={optIdx}
                     id={`parallel-${team.id}-option-${optIdx}`}
-                    disabled={isAnswered}
+                    disabled={isAnswered || isBot}
                     onClick={() => onAnswer(optIdx)}
-                    whileHover={!isAnswered ? { scale: 1.01 } : {}}
-                    whileTap={!isAnswered ? { scale: 0.99 } : {}}
+                    whileHover={!isAnswered && !isBot ? { scale: 1.01 } : {}}
+                    whileTap={!isAnswered && !isBot ? { scale: 0.99 } : {}}
                     className={`w-full text-left px-3 py-2.5 rounded-xl border transition-all flex items-center justify-between gap-2.5 cursor-pointer disabled:cursor-default ${optClass}`}
                   >
                     <div className="flex items-center gap-2.5 flex-1 min-w-0">
@@ -302,6 +321,7 @@ interface ParallelQuestionArenaProps {
     isCorrect: boolean;
     timestamp: number;
   } | null;
+  isBotTeam2?: boolean;
 }
 
 export const ParallelQuestionArena: React.FC<ParallelQuestionArenaProps> = ({
@@ -326,6 +346,7 @@ export const ParallelQuestionArena: React.FC<ParallelQuestionArenaProps> = ({
   ropePosition,
   activeTeamId,
   lastAction,
+  isBotTeam2 = false,
 }) => {
   // Keyboard listener for simultaneous 2-player keyboard input
   useEffect(() => {
@@ -358,25 +379,26 @@ export const ParallelQuestionArena: React.FC<ParallelQuestionArenaProps> = ({
         onTeam1Next();
       }
 
-      // Team 2 controls: J, K, L, ; (or 7, 8, 9, 0)
-      if (!team2Answered && team2Question && team2.totalAnswered < 10) {
-        if (key === 'j' || key === '7') {
+      // Team 2 controls (only active if not Bot)
+      if (!isBotTeam2) {
+        if (!team2Answered && team2Question && team2.totalAnswered < 10) {
+          if (key === 'j' || key === '7') {
+            e.preventDefault();
+            onTeam2Answer(0);
+          } else if (key === 'k' || key === '8') {
+            e.preventDefault();
+            onTeam2Answer(1);
+          } else if (key === 'l' || key === '9') {
+            e.preventDefault();
+            onTeam2Answer(2);
+          } else if (key === ';' || key === '0' || key === 'enter') {
+            e.preventDefault();
+            onTeam2Answer(3);
+          }
+        } else if (team2Answered && (key === 'enter' || key === 'u')) {
           e.preventDefault();
-          onTeam2Answer(0);
-        } else if (key === 'k' || key === '8') {
-          e.preventDefault();
-          onTeam2Answer(1);
-        } else if (key === 'l' || key === '9') {
-          e.preventDefault();
-          onTeam2Answer(2);
-        } else if (key === ';' || key === '0' || key === 'enter') {
-          e.preventDefault();
-          onTeam2Answer(3);
+          onTeam2Next();
         }
-      } else if (team2Answered && (key === 'enter' || key === 'u')) {
-        // Enter or U for Team 2 Next
-        e.preventDefault();
-        onTeam2Next();
       }
     };
 
@@ -393,6 +415,7 @@ export const ParallelQuestionArena: React.FC<ParallelQuestionArenaProps> = ({
     onTeam2Answer,
     onTeam1Next,
     onTeam2Next,
+    isBotTeam2,
   ]);
 
   return (
@@ -460,6 +483,7 @@ export const ParallelQuestionArena: React.FC<ParallelQuestionArenaProps> = ({
             onNext={onTeam2Next}
             keyboardKeys={['J', 'K', 'L', ';']}
             teamSide="right"
+            isBot={isBotTeam2}
           />
         </div>
       </div>
