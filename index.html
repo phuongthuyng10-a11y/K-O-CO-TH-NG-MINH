@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,10 +12,340 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- Top Navigation Header -->
+    <header class="top-nav">
+      <div class="container-app nav-content">
+        <div class="logo-badge">
+          <div class="logo-icon">🪢</div>
+          <div class="logo-text">
+            <h1>Kéo Co Tri Thức</h1>
+            <span>Đấu Trường Trí Tuệ 2 Đội</span>
+          </div>
+        </div>
+
+        <div class="controls-group">
+          <!-- Chế độ chơi nhanh -->
+          <button class="btn-control" id="btnModePvp" onclick="setOpponentType('pvp')">👥 2 Người</button>
+          <button class="btn-control" id="btnModeAi" onclick="setOpponentType('ai')">🤖 Với Máy (AI)</button>
+          <span style="color: #cbd5e1;">|</span>
+          <button class="btn-control" id="btnModeAlternating" onclick="setGameMode('alternating')">⏱ Luân Phiên (10s)</button>
+          <button class="btn-control" id="btnModeParallel" onclick="setGameMode('parallel')">⚡ Song Song</button>
+          <span style="color: #cbd5e1;">|</span>
+          <button class="btn-control" id="btnSoundToggle" onclick="toggleSound()">🔊 Bật</button>
+          <button class="btn-control btn-primary" onclick="initNewMatch()">🔄 Ván Mới</button>
+          <button class="btn-control" onclick="openQuestionsModal()" title="Quản lý ngân hàng câu hỏi">📚 Câu Hỏi</button>
+          <button class="btn-control" onclick="openSettingsModal()" title="Cài đặt trò chơi">⚙️</button>
+          <button class="btn-control" onclick="openModal('rulesModal')" title="Xem luật chơi">❓</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Game Arena -->
+    <main class="container-app" style="flex: 1; margin-top: 12px;">
+      <!-- Sân Kéo Co & Tỷ Số -->
+      <section class="tug-arena-wrapper">
+        <!-- Bảng điểm 2 đội -->
+        <div class="score-hud">
+          <!-- Đội 1 -->
+          <div class="team-hud-card team1" id="team1CardHud">
+            <div class="team-info-group">
+              <div class="team-avatar-badge">🔵</div>
+              <div>
+                <div class="team-name" id="hudTeam1Name">Đội 1 (Xanh Lam)</div>
+                <div class="team-subtitle">Phía bên trái</div>
+              </div>
+            </div>
+            <div class="team-score-bubble" id="hudTeam1Score">0</div>
+          </div>
+
+          <!-- Mốc dịch chuyển dây thừng -->
+          <div class="rope-meter-center">
+            <span class="rope-meter-tag">Vị Trí Thừng</span>
+            <div class="rope-displacement-badge" id="hudRopeDisp">CÂN BẰNG (0)</div>
+          </div>
+
+          <!-- Đội 2 -->
+          <div class="team-hud-card team2" id="team2CardHud">
+            <div class="team-info-group">
+              <div class="team-avatar-badge">🔴</div>
+              <div>
+                <div class="team-name" id="hudTeam2Name">Đội 2 (Đỏ Rực)</div>
+                <div class="team-subtitle">Phía bên phải</div>
+              </div>
+            </div>
+            <div class="team-score-bubble" id="hudTeam2Score">0</div>
+          </div>
+        </div>
+
+        <!-- Khung sân đấu trực quan -->
+        <div class="stage-field">
+          <!-- Vạch phân chia sân (-5 đến +5) -->
+          <div class="arena-markings">
+            <div class="tick-mark" data-val="-5"></div>
+            <div class="tick-mark" data-val="-4"></div>
+            <div class="tick-mark" data-val="-3"></div>
+            <div class="tick-mark" data-val="-2"></div>
+            <div class="tick-mark" data-val="-1"></div>
+            <div class="tick-mark" data-val="0" style="opacity: 0;"></div>
+            <div class="tick-mark" data-val="+1"></div>
+            <div class="tick-mark" data-val="+2"></div>
+            <div class="tick-mark" data-val="+3"></div>
+            <div class="tick-mark" data-val="+4"></div>
+            <div class="tick-mark" data-val="+5"></div>
+          </div>
+
+          <!-- Vạch thắng trung tâm -->
+          <div class="center-win-line"></div>
+
+          <!-- Nhóm nhân vật Đội 1 (Xanh) -->
+          <div class="pullers-group team1-pullers" id="team1Pullers">
+            <div class="character-card">
+              <div class="char-head">😠<span class="char-sweat">💧</span></div>
+              <div class="char-body"></div>
+              <div class="char-legs"><div class="char-leg"></div><div class="char-leg"></div></div>
+            </div>
+            <div class="character-card">
+              <div class="char-head">😤<span class="char-sweat">💧</span></div>
+              <div class="char-body"></div>
+              <div class="char-legs"><div class="char-leg"></div><div class="char-leg"></div></div>
+            </div>
+            <div class="character-card">
+              <div class="char-head">💪<span class="char-sweat">💧</span></div>
+              <div class="char-body"></div>
+              <div class="char-legs"><div class="char-leg"></div><div class="char-leg"></div></div>
+            </div>
+          </div>
+
+          <!-- Nhóm nhân vật Đội 2 (Đỏ) -->
+          <div class="pullers-group team2-pullers" id="team2Pullers">
+            <div class="character-card">
+              <div class="char-head">😠<span class="char-sweat">💧</span></div>
+              <div class="char-body"></div>
+              <div class="char-legs"><div class="char-leg"></div><div class="char-leg"></div></div>
+            </div>
+            <div class="character-card">
+              <div class="char-head">😤<span class="char-sweat">💧</span></div>
+              <div class="char-body"></div>
+              <div class="char-legs"><div class="char-leg"></div><div class="char-leg"></div></div>
+            </div>
+            <div class="character-card">
+              <div class="char-head">💪<span class="char-sweat">💧</span></div>
+              <div class="char-body"></div>
+              <div class="char-legs"><div class="char-leg"></div><div class="char-leg"></div></div>
+            </div>
+          </div>
+
+          <!-- Dây kéo di động & Dải cờ đỏ -->
+          <div class="rope-container" id="ropeAnimatedContainer">
+            <div class="rope-line"></div>
+            <div class="rope-flag"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Khu vực hiển thị câu hỏi tương tác -->
+      <section class="game-play-area" id="gamePlayArea">
+        <!-- Được sinh động động bởi script.js -->
+      </section>
+    </main>
+
+    <!-- Canvas Hiệu Ứng Ăn Mừng -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- MODAL 1: LUẬT CHƠI (RULES) -->
+    <div class="modal-backdrop" id="rulesModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title font-heading">📜 Luật Chơi Kéo Co Tri Thức</h3>
+          <button class="btn-close-modal" onclick="closeModal('rulesModal')">✕</button>
+        </div>
+        <div class="modal-body" style="font-size: 0.95rem; line-height: 1.6;">
+          <h4 style="color: #2563eb; margin-bottom: 6px;">1. Quy Tắc Kéo Co & Tỷ Số:</h4>
+          <p style="margin-bottom: 12px;">Mỗi câu trả lời đúng sẽ giúp đội của bạn ghi 1 điểm và <strong>kéo dây thừng dịch về phía mình 1 nấc</strong>. Đội nào kéo dây thừng chạm mốc <strong>-5 hoặc +5</strong> sẽ giành chiến thắng ngay lập tức!</p>
+
+          <h4 style="color: #dc2626; margin-bottom: 6px;">2. Chế Độ Đấu Luân Phiên (Có Chuyển Lượt Cướp Điểm):</h4>
+          <ul style="margin-left: 20px; margin-bottom: 12px;">
+            <li>Mỗi câu hỏi có <strong>10 giây</strong> suy nghĩ và trả lời.</li>
+            <li>Nếu đội sở hữu lượt trả lời <strong>SAI</strong> hoặc <strong>HẾT 10 GIÂY</strong>, quyền trả lời sẽ lập tức <strong>chuyển sang đối thủ</strong> để cướp điểm!</li>
+            <li>Đội nhận quyền cướp điểm có thêm 10 giây mới để chọn một trong các đáp án còn lại.</li>
+          </ul>
+
+          <h4 style="color: #f59e0b; margin-bottom: 6px;">3. Chế Độ Đấu Song Song (Tốc Độ Bàn Phím):</h4>
+          <ul style="margin-left: 20px; margin-bottom: 12px;">
+            <li>Cả 2 đội trả lời độc lập cùng lúc 10 câu hỏi của riêng mình.</li>
+            <li>Đội 1 dùng phím: <code>A</code>, <code>S</code>, <code>D</code>, <code>F</code>.</li>
+            <li>Đội 2 dùng phím: <code>J</code>, <code>K</code>, <code>L</code>, <code>;</code>.</li>
+          </ul>
+
+          <h4 style="color: #16a34a; margin-bottom: 6px;">4. Chơi Với Máy (AI):</h4>
+          <p>Có thể tùy chỉnh độ thông minh của AI: Dễ (50% đúng), Vừa (75% đúng), Khó (90% đúng) trong menu Cài Đặt.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-control btn-primary" onclick="closeModal('rulesModal')">Đã Hiểu, Bắt Đầu Chơi!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 2: CÀI ĐẶT (SETTINGS) -->
+    <div class="modal-backdrop" id="settingsModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title font-heading">⚙️ Cài Đặt Trận Đấu</h3>
+          <button class="btn-close-modal" onclick="closeModal('settingsModal')">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Tên Đội 1 (Xanh)</label>
+            <input type="text" class="form-input" id="settingTeam1Name" placeholder="Đội 1 (Xanh Lam)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tên Đội 2 (Đỏ)</label>
+            <input type="text" class="form-input" id="settingTeam2Name" placeholder="Đội 2 (Đỏ Rực)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Thời Gian Mỗi Lượt (Luân phiên)</label>
+            <select class="form-select" id="settingTimeLimit">
+              <option value="10">10 giây (Mặc định kịch tính)</option>
+              <option value="15">15 giây</option>
+              <option value="20">20 giây</option>
+              <option value="none">Không giới hạn thời gian</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Thể Thức Tranh Tài</label>
+            <select class="form-select" id="settingGameMode">
+              <option value="alternating">Đấu Luân Phiên (Từng lượt câu hỏi + Cướp điểm)</option>
+              <option value="parallel">Đấu Song Song (Cả 2 đội trả lời cùng lúc)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Đối Thủ Trực Tiếp</label>
+            <select class="form-select" id="settingOpponentType">
+              <option value="pvp">2 Người chơi cùng máy (PvP)</option>
+              <option value="ai">Đấu với Máy Tính (AI Bot)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Độ Khó Của Máy (AI)</label>
+            <select class="form-select" id="settingAiDifficulty">
+              <option value="easy">Dễ (Tỷ lệ đúng ~50%)</option>
+              <option value="medium" selected>Vừa phải (Tỷ lệ đúng ~75%)</option>
+              <option value="hard">Thông thái (Tỷ lệ đúng ~90%)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-control" onclick="closeModal('settingsModal')">Hủy</button>
+          <button class="btn-control btn-primary" onclick="saveSettingsModal()">Áp Dụng & Đấu Ván Mới</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 3: QUẢN LÝ NGÂN HÀNG CÂU HỎI -->
+    <div class="modal-backdrop" id="questionsModal">
+      <div class="modal-card" style="max-width: 680px;">
+        <div class="modal-header">
+          <div>
+            <h3 class="modal-title font-heading">📚 Ngân Hàng Câu Hỏi</h3>
+            <div style="font-size: 0.8rem; color: #64748b;" id="totalQuestionsCount">60+ câu hỏi</div>
+          </div>
+          <button class="btn-close-modal" onclick="closeModal('questionsModal')">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Danh sách câu hỏi -->
+          <div id="questionListSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; flex-wrap: wrap;">
+              <button class="btn-control btn-primary" onclick="addNewQuestionPrompt()">➕ Thêm Câu Hỏi Mới</button>
+              <button class="btn-control" onclick="resetDefaultQuestions()" style="color: #b91c1c;">🔄 Khôi Phục Gốc (60+ câu)</button>
+            </div>
+            <div id="questionsListContainer" style="max-height: 420px; overflow-y: auto; padding-right: 4px;"></div>
+          </div>
+
+          <!-- Form Thêm / Chỉnh sửa câu hỏi -->
+          <div id="questionEditorSection" style="display: none;">
+            <h4 id="qFormTitle" style="font-size: 1.1rem; margin-bottom: 12px; color: #0f172a;">Thêm Câu Hỏi</h4>
+            <div class="form-group">
+              <label class="form-label">Nội Dung Câu Hỏi</label>
+              <textarea class="form-input" id="formQuestionText" rows="2" placeholder="Ví dụ: Đỉnh núi nào cao nhất Việt Nam?"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phương Án A</label>
+              <input type="text" class="form-input" id="formOption0" placeholder="Phương án A">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phương Án B</label>
+              <input type="text" class="form-input" id="formOption1" placeholder="Phương án B">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phương Án C</label>
+              <input type="text" class="form-input" id="formOption2" placeholder="Phương án C">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phương Án D</label>
+              <input type="text" class="form-input" id="formOption3" placeholder="Phương án D">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Đáp Án Đúng</label>
+              <select class="form-select" id="formCorrectSelect">
+                <option value="0">Phương án A</option>
+                <option value="1">Phương án B</option>
+                <option value="2">Phương án C</option>
+                <option value="3">Phương án D</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Chủ Đề (Tùy chọn)</label>
+              <input type="text" class="form-input" id="formCategory" placeholder="Ví dụ: Địa lý, Lịch sử, Đố vui...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Lời Giải Thích Thêm (Tùy chọn)</label>
+              <input type="text" class="form-input" id="formExplanation" placeholder="Giải thích vì sao đáp án đó chính xác">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+              <button class="btn-control" onclick="cancelQuestionForm()">Hủy Bỏ</button>
+              <button class="btn-control btn-primary" onclick="saveQuestionForm()">Lưu Câu Hỏi</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-control btn-primary" onclick="closeModal('questionsModal')">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 4: KẾT THÚC & VINH DANH CHIẾN THẮNG -->
+    <div class="modal-backdrop" id="victoryModal">
+      <div class="modal-card">
+        <div class="modal-body victory-card">
+          <div class="victory-trophy">🏆</div>
+          <h2 class="victory-title font-heading" id="victoryTitle">Đội 1 Vô Địch!</h2>
+          <p class="victory-desc" id="victoryDesc">Chiến thắng ngoạn mục trên đấu trường tri thức!</p>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-box-title">🔵 Đội 1 (Xanh Lam)</div>
+              <div class="stat-box-num" id="finalT1Score">0</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-title">🔴 Đội 2 (Đỏ Rực)</div>
+              <div class="stat-box-num" id="finalT2Score">0</div>
+            </div>
+          </div>
+
+          <button class="btn-control btn-primary" style="padding: 12px 28px; font-size: 1.1rem; width: 100%;" onclick="initNewMatch()">
+            🔄 Đấu Lại Ván Mới
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tải Logic Trò Chơi (JavaScript thuần không phụ thuộc) -->
+    <script src="./questions.js"></script>
+    <script src="./script.js"></script>
   </body>
 </html>
-
